@@ -19,6 +19,7 @@
               answerElement.innerText = res.data.choices[0].text;
             }
         },(error) => {
+            console.log(error)
             const message = error.response.data.error.message ?? (error.message ?? "An error occured");
             console.log("Error",message);
         });
