@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/openai-web/dist/openai.min.js"></script>
+    <script>
+      async function getJwt() {
+        const res = await fetch("/jwt")
+        const { Jwt } = await res.json()
+        return Jwt
+      }
+      async function getAnswer() {
+        try {
+          const jwt = await getJwt()
+
+          const configuration = new OpenAI.Configuration({
+              apiKey: jwt,
+              basePath: "http://localhost:8081/v1"
+          });
+          const openai = new OpenAI.OpenAIApi(configuration);
+
+          const res = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: document.getElementById("question")?.value ?? "",
+          })
+          const answerElement = document.getElementById('answer')
+          if (answer) {
+            answerElement.innerText = res.data.choices[0].text;
+          }
+        } catch(error) {
+          console.log(error)
+          const message = error.response.data.error.message ?? (error.message ?? "An error occured");
+          console.log("Error",message);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div>question</div>
+    <div><input id="question" style="width: 100%"></div>
+    <div><button onclick="getAnswer()">query</button></div>
+    <div>answer:</div>
+    <div id="answer"></div>
+  </body>
+</html>
+

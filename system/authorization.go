@@ -1,7 +1,8 @@
-package main
+package system
 
 import (
 	"context"
+	"fmt"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -39,12 +40,14 @@ func WithAuthorization(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if !strings.HasPrefix(authHeader, "Bearer ") {
+      fmt.Println("need Bearer ")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := parseToken(tokenStr)
 		if err != nil {
+      fmt.Println("failed to parse token ")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -61,6 +64,7 @@ func WithAuthorization(h http.Handler) http.Handler {
 			if err := json.NewEncoder(w).Encode(m); err != nil {
 				status = http.StatusInternalServerError
 			}
+      fmt.Println("failed to get audiences ")
 			w.WriteHeader(status)
 			return
 		}
@@ -70,9 +74,11 @@ func WithAuthorization(h http.Handler) http.Handler {
 			if err := json.NewEncoder(w).Encode(m); err != nil {
 				status = http.StatusInternalServerError
 			}
+      fmt.Println("failed to get a audience")
 			w.WriteHeader(status)
 			return
 		}
+    fmt.Println("passed")
 
 		aud := Audience(auds[0])
 		ctx := context.WithValue(r.Context(), AudienceKey{}, aud)

@@ -1,4 +1,4 @@
-package main
+package system
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func getModifyResponse() func(*http.Response) error {
 	}
 }
 
-func main() {
+func Serve() {
 	if len(os.Args) >= 2 && os.Args[1] == "--jwt-gen" {
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 			"iss": "my-auth-server",
