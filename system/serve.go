@@ -10,12 +10,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const proxyHost = "api.openai.com"
+const proxyHost = "localhost:8802"
 
 func getModifyRequest() func(req *http.Request) {
 	return func(req *http.Request) {
 		req.Header = http.Header{}
-		req.URL.Scheme = "https"
+		// req.URL.Scheme = "https"
+		req.URL.Scheme = "http"
 		req.URL.Host = proxyHost
 		req.Host = proxyHost
 		req.Header.Set("Authorization", "Bearer "+os.Getenv("OPENAI_API_KEY"))
@@ -47,12 +48,15 @@ func Serve() {
 		return
 	}
 
+	port := os.Getenv("PORT")
+
 	rp := &httputil.ReverseProxy{Director: getModifyRequest()}
 	rp.ModifyResponse = getModifyResponse()
 	server := http.Server{
-		Addr:    ":8081",
+		Addr:    ":" + port,
 		Handler: WithLogging(WithPreflight(WithAuthorization(rp))),
 	}
+	fmt.Println("server is listen :" + port)
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err.Error())
