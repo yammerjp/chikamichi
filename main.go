@@ -1,10 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"os"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const proxyHost = "api.openai.com"
@@ -29,6 +32,21 @@ func getModifyResponse() func(*http.Response) error {
 }
 
 func main() {
+	if len(os.Args) >= 2 && os.Args[1] == "--jwt-gen" {
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"iss": "my-auth-server",
+			"sub": "john",
+			"aud": "john",
+		})
+		s, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(s)
+
+		return
+	}
+
 	rp := &httputil.ReverseProxy{Director: getModifyRequest()}
 	rp.ModifyResponse = getModifyResponse()
 	server := http.Server{
