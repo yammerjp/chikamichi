@@ -1,4 +1,4 @@
-module github.com/yammerjp/chikamichi
+module github.com/yammerjp/monpi
 
 go 1.20
 

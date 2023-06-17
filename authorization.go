@@ -57,7 +57,7 @@ func WithAuthorization(h http.Handler) http.Handler {
 		auds, err := token.Claims.GetAudience()
 		if err != nil {
 			status := http.StatusBadRequest
-			m := map[string]string{"chikamichi_error": "failed to get jwt audiences"}
+			m := map[string]string{"monpi_error": "failed to get jwt audiences"}
 			if err := json.NewEncoder(w).Encode(m); err != nil {
 				status = http.StatusInternalServerError
 			}
@@ -66,7 +66,7 @@ func WithAuthorization(h http.Handler) http.Handler {
 		}
 		if auds == nil || len(auds) != 1 {
 			status := http.StatusBadRequest
-			m := map[string]string{"chikamichi_error": "failed to get a jwt audience"}
+			m := map[string]string{"monpi_error": "failed to get a jwt audience"}
 			if err := json.NewEncoder(w).Encode(m); err != nil {
 				status = http.StatusInternalServerError
 			}
